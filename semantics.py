@@ -2,16 +2,44 @@
 
 
 from formula import *
-from functions import atoms
+from functions import *
 
 
 def truth_value(formula, interpretation):
     """Determines the truth value of a formula in an interpretation (valuation).
     An interpretation may be defined as dictionary. For example, {'p': True, 'q': False}.
     """
-    pass
-    # ======== YOUR CODE HERE ========
-
+    if isinstance(formula, Atom):
+        return interpretation
+    if isinstance(formula, Not):
+        return Not(truth_value(formula.inner))
+    if isinstance(formula, Or):
+        sub1 = truth_value(formula.left, interpretation)
+        sub2 = truth_value(formula.right, interpretation)
+        if sub1 or sub2:
+            return True
+        else:
+            return False
+    if isinstance(formula, And):
+        sub1 = truth_value(formula.left, interpretation)
+        sub2 = truth_value(formula.right, interpretation)
+        print(sub1)
+        print(sub2)
+        if sub1 and sub2:
+            return True
+        else: 
+            return False
+    if isinstance(formula, Implies):
+        sub1 = truth_value(formula.left, interpretation)
+        sub2 = truth_value(formula.right, interpretation)
+        if sub1 and sub2:
+            return True
+        if Not(sub1) and (sub2):
+                return True
+        if Not(sub1) and Not(sub2):
+            return True
+        else:
+            return False
 
 def is_logical_consequence(premises, conclusion):  # function TT-Entails? in the book AIMA.
     """Returns True if the conclusion is a logical consequence of the set of premises. Otherwise, it returns False."""
