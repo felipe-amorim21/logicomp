@@ -35,7 +35,24 @@ def satisfiability_brute_force(formula):
     """Checks whether formula is satisfiable.
     In other words, if the input formula is satisfiable, it returns an interpretation that assigns true to the formula.
     Otherwise, it returns False."""
-    pass
-    # ======== YOUR CODE HERE ========
+    
+    list_atoms = []
+    list_atoms = atoms(formula)
+    interpretation = None
+    return sat(formula,list_atoms,interpretation)
+
+def sat(formula, list_atoms, interpretation):
+    if list_atoms == None:
+        if truth_value(formula, interpretation):
+            return True
+        else:
+            return False
+    atom = list_atoms.pop()
+    interpretation1 = {interpretation}.union({(atom,True)})
+    interpretation2 = {interpretation}.union({(atom,False)})
+    result = sat(formula, list_atoms, interpretation1)
+    if result != False:
+        return result
+    return sat(formula, list_atoms, interpretation2)
 
 
