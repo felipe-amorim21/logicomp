@@ -6,6 +6,7 @@ formula1 = Atom('p')  # p
 formula2 = Atom('q')  # q
 formula3 = And(formula1, formula2) # p and q
 formula8 = Implies(Not(And(Atom('p'), Atom('s'))), And(Atom('q'), Not(And(Atom('p'), Atom('s')))))
+formula11 = Not(Not(Not(Atom("p"))))
 
 print('atomicas of formula7:')
 print(atoms(formula8))
@@ -18,3 +19,7 @@ print(number_of_connectives(formula8))
 
 print(number_of_atoms(formula3))
 print(number_of_atoms(formula8))
+
+print(is_literal(formula3))
+print(is_literal(formula8))
+print(is_literal(formula11))

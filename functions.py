@@ -94,7 +94,12 @@ def number_of_connectives(formula):
 
 def is_literal(formula):
     """Returns True if formula is a literal. It returns False, otherwise"""
-    pass  # ======== REMOVE THIS LINE AND INSERT YOUR CODE HERE ========
+    if isinstance(formula, Atom):
+        return True
+    if isinstance(formula,Not):
+        return is_literal(formula.inner)
+    else:
+        return False
 
 
 def substitution(formula, old_subformula, new_subformula):
