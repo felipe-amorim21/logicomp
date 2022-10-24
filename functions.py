@@ -82,7 +82,14 @@ def number_of_atoms(formula):
 
 def number_of_connectives(formula):
     """Returns the number of connectives occurring in a formula."""
-    pass  # ======== REMOVE THIS LINE AND INSERT YOUR CODE HERE ========
+    if isinstance(formula, Atom):
+        return 0
+    if isinstance(formula, Not):
+        return 1 + number_of_connectives(formula.inner)
+    if isinstance(formula, Implies) or isinstance(formula, And) or isinstance(formula, Or):
+        sub1 = number_of_connectives(formula.left)
+        sub2 = number_of_connectives(formula.right)
+        return 1 + sub1 + sub2
 
 
 def is_literal(formula):

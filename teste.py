@@ -4,7 +4,7 @@ from functions import *
 formula7 = Implies(Not(And(Atom('p'), Atom('s'))), And(Atom('q'), Atom('r')))  # ((¬(p /\ s)) -> (q /\ r))
 formula1 = Atom('p')  # p
 formula2 = Atom('q')  # q
-formula3 = And(formula1, formula2)
+formula3 = And(formula1, formula2) # p and q
 formula8 = Implies(Not(And(Atom('p'), Atom('s'))), And(Atom('q'), Not(And(Atom('p'), Atom('s')))))
 
 print('atomicas of formula7:')
@@ -13,5 +13,8 @@ for atom in atoms(formula8):
     print(atom)
 
 
-print(number_of_atoms(formula7))
+print(number_of_connectives(formula3))
+print(number_of_connectives(formula8))
+
+print(number_of_atoms(formula3))
 print(number_of_atoms(formula8))
