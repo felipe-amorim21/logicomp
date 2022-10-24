@@ -34,7 +34,7 @@ def is_valid(formula):
 def satisfiability_brute_force(formula):
     """Checks whether formula is satisfiable.
     In other words, if the input formula is satisfiable, it returns an interpretation that assigns true to the formula.
-    Otherwise, it returns False."""
+    Otherwise, it returns False. """
     
     list_atoms = []
     list_atoms = atoms(formula)
