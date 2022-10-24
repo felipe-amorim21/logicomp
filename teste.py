@@ -11,3 +11,7 @@ print('atomicas of formula7:')
 print(atoms(formula8))
 for atom in atoms(formula8):
     print(atom)
+
+
+print(number_of_atoms(formula7))
+print(number_of_atoms(formula8))
