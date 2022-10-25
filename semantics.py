@@ -1,6 +1,7 @@
 """The goal in this module is to define functions associated with the semantics of formulas in propositional logic. """
 
 
+from multiprocessing.sharedctypes import Value
 from formula import *
 from functions import *
 
@@ -10,9 +11,9 @@ def truth_value(formula, interpretation):
     An interpretation may be defined as dictionary. For example, {'p': True, 'q': False}.
     """
     if isinstance(formula, Atom):
-        return interpretation
+        return interpretation.get(str(formula))
     if isinstance(formula, Not):
-        return Not(truth_value(formula.inner))
+        return Not(truth_value(formula.inner, interpretation))
     if isinstance(formula, Or):
         sub1 = truth_value(formula.left, interpretation)
         sub2 = truth_value(formula.right, interpretation)
