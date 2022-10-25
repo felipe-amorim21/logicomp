@@ -13,7 +13,7 @@ def truth_value(formula, interpretation):
     if isinstance(formula, Atom):
         return interpretation.get(str(formula))
     if isinstance(formula, Not):
-        return Not(truth_value(formula.inner, interpretation))
+        return not (truth_value(formula.inner, (interpretation)))
     if isinstance(formula, Or):
         sub1 = truth_value(formula.left, interpretation)
         sub2 = truth_value(formula.right, interpretation)
@@ -66,19 +66,22 @@ def satisfiability_brute_force(formula):
     Otherwise, it returns False. """
     
     list_atoms = []
-    list_atoms = atoms(formula)
+    for atom in atoms(formula):
+        list_atoms.append(atom)
     interpretation = None
     return sat(formula,list_atoms,interpretation)
 
 def sat(formula, list_atoms, interpretation):
-    if list_atoms == None:
+    if len(list_atoms) == 0:
         if truth_value(formula, interpretation):
             return True
         else:
             return False
     atom = list_atoms.pop()
-    interpretation1 = {interpretation}.union({(atom,True)})
-    interpretation2 = {interpretation}.union({(atom,False)})
+    interpretation1 = {}
+    interpretation1[str(atom)] = True
+    interpretation2 = {}
+    interpretation2[str(atom)] = False
     result = sat(formula, list_atoms, interpretation1)
     if result != False:
         return result
