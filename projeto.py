@@ -16,6 +16,8 @@ pd = pd.read_csv('./pacientes/column_bin_5a_3p.csv')
 patientStatus = pd['P'].values.tolist()
 
 patientsNoDisease = pd.loc[pd['P'] == 0]
+patientsDisease = pd.loc[pd['P'] == 1]
+
 '''print(patientsNoDisease['PI <= 42.09'].values)'''
 
 # atomica do tipo Xatributo,regra_atual,regra_aparece_na_formula
@@ -103,7 +105,6 @@ regra.'''
             formula_list.clear()
     return and_all(formulas)
 
-print(thirdRestriction(attributes,m))
 
 
 
@@ -115,15 +116,20 @@ ao da regra, então a regra não cobre esse paciente.'''
     formula_list = []
     formulas = []
     for i in range(1, m+1):
-        for k in range(5):
-            for p in range(1, patients+1):
+            for p in range(0, patients):
                 for j in attributes:
-                    formula = Implies(Atom('x' + str(j) + '_'+ str(i) + '_' + str(k)),Not(Atom('c' + str(i) + '_' + str(p))))
-                    formula_list.append(formula)
-        formulas.append(and_all(formula_list))
-        formula_list.clear()
+                    aux_list = patientsDisease[j].values.tolist()
+                    if aux_list[p] == 1:
+                        formula = Implies(Atom('x' + str(j) + '_'+ str(i) + '_' + 'gt'),Not(Atom('c' + str(i) + '_' + str(p+1))))
+                        formula_list.append(formula)
+                    else:
+                        formula = Implies(Atom('x' + str(j) + '_'+ str(i) + '_' + 'le'),Not(Atom('c' + str(i) + '_' + str(p+1))))
+                        formula_list.append(formula)
+            formulas.append(and_all(formula_list))
+            formula_list.clear()
     return and_all(formulas)
 
+print(fourthRestriction(attributes, m))
 
 def fifthRestriction(m):
     '''Cada paciente com patologia deve ser coberto por alguma das regras.'''
