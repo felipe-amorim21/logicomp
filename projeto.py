@@ -1,6 +1,7 @@
 import csv
 from semantics import *
 from functions import *
+import pandas as pd
 
 #readind files and getting attributes
 with open('./pacientes/column_bin_5a_3p.csv', mode='r') as arquivo_csv:
@@ -9,6 +10,10 @@ with open('./pacientes/column_bin_5a_3p.csv', mode='r') as arquivo_csv:
     attributes = next(leitor_csv)
     attributes.pop()
 
+
+    #Pegando os pacientes
+pd = pd.read_csv('./pacientes/column_bin_5a_3p.csv')
+patientStatus = pd['P'].values.tolist()
 # atomica do tipo Xatributo,regra_atual,regra_aparece_na_formula
 m = 4
 rules = ['gt', 'le', 's']
@@ -43,6 +48,13 @@ def or_all(list_formulas):
     return first_formula
 
 
+def numberOfPatientsWithDisease(patient_list):
+    count = 0
+    for i in patient_list:
+        if i == 1:
+            count += 1
+    return count
+
 def firstRestriction():
     '''Para cada atributo e cada regra, temos exatamente uma das três possibilidades: o atributo aparece
 com ≤ na regra, o atributo aparece com > na regra, ou o atributo não aparece na regra.'''
@@ -60,13 +72,31 @@ def secondRestriction(attributes, m):
                     formula_list.append(formula)
         formulas.append(or_all(formula_list))
         formula_list.clear()
-    return formulas 
+    return and_all(formulas)
 
-for i in secondRestriction(attributes, m):
-    print(i)
-    print('------------------------')
+print(secondRestriction(attributes, m))
 
 
 def thirdRestriction(attribute, m):
     '''Para cada paciente sem patologia e cada regra, algum atributo do paciente não pode ser aplicado à
 regra.'''
+    '''formula_list = []
+    formulas = []
+    for i in range(1,m+1):
+        for j in attributes:
+'''
+
+def fifthRestriction(attributes, m):
+    '''Cada paciente com patologia deve ser coberto por alguma das regras.'''
+    formula_list = []
+    formulas = []
+    patients = numberOfPatientsWithDisease(patientStatus)
+    for p in range(1, patients+1):
+        for i in range(1,m+1):
+            formula =  Atom('c' + str(i) + '_' + str(p))
+            formula_list.append(formula)
+        formulas.append(or_all(formula_list))
+        formula_list.clear()
+    return and_all(formulas)
+        
+print(fifthRestriction(attributes, m))
