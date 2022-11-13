@@ -4,7 +4,10 @@ from functions import *
 import pandas as pd
 
 #readind files and getting attributes
-with open('./pacientes/column_bin_3a_3p.csv', mode='r') as arquivo_csv:
+
+directory = './pacientes/column_bin_3a_4p.csv'
+
+with open(directory, mode='r') as arquivo_csv:
     leitor_csv = csv.reader(arquivo_csv)
 
     attributes = next(leitor_csv)
@@ -12,13 +15,13 @@ with open('./pacientes/column_bin_3a_3p.csv', mode='r') as arquivo_csv:
 
 
     #Pegando os pacientes
-pd = pd.read_csv('./pacientes/column_bin_3a_3p.csv')
+pd = pd.read_csv(directory)
 patientStatus = pd['P'].values.tolist()
 
 patientsNoDisease = pd.loc[pd['P'] == 0]
 patientsDisease = pd.loc[pd['P'] == 1]
 
-'''print(patientsNoDisease['PI <= 42.09'].values)'''
+print(patientsNoDisease['LA <= 39.63'].values.tolist())
 
 # atomica do tipo Xatributo,regra_atual,regra_aparece_na_formula
 m = 2
@@ -85,6 +88,8 @@ com ≤ na regra, o atributo aparece com > na regra, ou o atributo não aparece 
         formula2.clear()
     return and_all(formulas)
 
+
+
 def secondRestriction(attributes, m):
     '''Cada regra deve ter algum atributo aparecendo nela.'''
     formula_list = []
@@ -113,14 +118,16 @@ regra.'''
     formula_list = []
     formulas = []
     for i in range(1, m+1):
+        for p in range(patients):
             for j in attributes:
-                if patientsNoDisease[j].values == 1: 
+                aux_list = patientsNoDisease[j].values.tolist()
+                if aux_list[p] == 1: 
                     formula =  Atom('x' + str(j) + '_' + str(i) + '_' + 'gt')
                     formula_list.append(formula)
                 else:
                     formula =  Atom('x' + str(j) + '_' + str(i) + '_' + 'le')
                     formula_list.append(formula)
-            formulas.append(or_all(formula_list))
+            formulas.append(or_all((formula_list)))
             formula_list.clear()
     return and_all(formulas)
 
@@ -160,6 +167,7 @@ def fifthRestriction(attributes, m):
         formula_list.clear()
     return and_all(formulas)
         
+
 def isSatisfactory(first, second, third, fourth, fifth):
     formula = []    
     formula.extend([first, second, third, fourth, fifth])
