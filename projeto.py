@@ -4,7 +4,7 @@ from functions import *
 import pandas as pd
 
 #readind files and getting attributes
-with open('./pacientes/column_bin_5a_3p.csv', mode='r') as arquivo_csv:
+with open('./pacientes/column_bin_3a_3p.csv', mode='r') as arquivo_csv:
     leitor_csv = csv.reader(arquivo_csv)
 
     attributes = next(leitor_csv)
@@ -12,7 +12,7 @@ with open('./pacientes/column_bin_5a_3p.csv', mode='r') as arquivo_csv:
 
 
     #Pegando os pacientes
-pd = pd.read_csv('./pacientes/column_bin_5a_3p.csv')
+pd = pd.read_csv('./pacientes/column_bin_3a_3p.csv')
 patientStatus = pd['P'].values.tolist()
 
 patientsNoDisease = pd.loc[pd['P'] == 0]
@@ -21,7 +21,7 @@ patientsDisease = pd.loc[pd['P'] == 1]
 '''print(patientsNoDisease['PI <= 42.09'].values)'''
 
 # atomica do tipo Xatributo,regra_atual,regra_aparece_na_formula
-m = 4
+m = 2
 rules = ['gt', 'le', 's']
 
 def and_all(list_formulas):
@@ -85,8 +85,6 @@ com ≤ na regra, o atributo aparece com > na regra, ou o atributo não aparece 
         formula2.clear()
     return and_all(formulas)
 
-print(firstRestriction(attributes, m))
-
 def secondRestriction(attributes, m):
     '''Cada regra deve ter algum atributo aparecendo nela.'''
     formula_list = []
@@ -128,8 +126,6 @@ regra.'''
 
 
 
-
-
 def fourthRestriction(attributes, m):
     '''Para cada paciente com patologia, cada regra e cada atributo, se o atributo do paciente não se aplicar
 ao da regra, então a regra não cobre esse paciente.'''
@@ -151,7 +147,7 @@ ao da regra, então a regra não cobre esse paciente.'''
     return and_all(formulas)
 
 
-def fifthRestriction(m):
+def fifthRestriction(attributes, m):
     '''Cada paciente com patologia deve ser coberto por alguma das regras.'''
     formula_list = []
     formulas = []
@@ -164,3 +160,9 @@ def fifthRestriction(m):
         formula_list.clear()
     return and_all(formulas)
         
+def isSatisfactory(first, second, third, fourth, fifth):
+    formula = []    
+    formula.extend([first, second, third, fourth, fifth])
+    return satisfiability_brute_force(and_all(formula))
+
+print(isSatisfactory(fifthRestriction(attributes, m), secondRestriction(attributes, m), thirdRestriction(attributes, m), fourthRestriction(attributes, m), fifthRestriction(attributes, m)))
