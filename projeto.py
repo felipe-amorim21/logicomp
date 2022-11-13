@@ -61,10 +61,31 @@ def numberOfPatientsWithDisease(patient_list):
             count += 1
     return count
 
-def firstRestriction():
+def firstRestriction(attributes, m):
     '''Para cada atributo e cada regra, temos exatamente uma das três possibilidades: o atributo aparece
 com ≤ na regra, o atributo aparece com > na regra, ou o atributo não aparece na regra.'''
+    formula_list = []
+    formula2 = []
+    formulas = []
+    n = 0
+    for i in range(1,m+1):
+        for j in attributes:
+            for k in rules:
+                formula =  (Atom('x' + str(j) + '_' + str(i) + '_' + str(k)))
+                formula_list.append(formula)
+                for c in range(len(rules)-1):
+                    if c == 1:
+                        formula2.append(Not(And(Atom('x' + str(j) + '_' + str(i) + '_' + rules[c]),Atom('x' + str(j) + '_' + str(i) + '_' + rules[2]))))
+                    else:
+                        for v in range(1, len(rules)):
+                            formula2.append(Not(And(Atom('x' + str(j) + '_' + str(i) + '_' + rules[c]),Atom('x' + str(j) + '_' + str(i) + '_' + rules[v])))) 
+        formulas.append(or_all(formula_list))
+        formulas.append(and_all(list( dict.fromkeys(formula2))))
+        formula_list.clear()
+        formula2.clear()
+    return and_all(formulas)
 
+print(firstRestriction(attributes, m))
 
 def secondRestriction(attributes, m):
     '''Cada regra deve ter algum atributo aparecendo nela.'''
@@ -129,7 +150,6 @@ ao da regra, então a regra não cobre esse paciente.'''
             formula_list.clear()
     return and_all(formulas)
 
-print(fourthRestriction(attributes, m))
 
 def fifthRestriction(m):
     '''Cada paciente com patologia deve ser coberto por alguma das regras.'''
