@@ -228,5 +228,34 @@ def thirdRestriction(attributes, m):
             formulas.append(((formula)))
     return (formulas)
 
-print(thirdRestriction(attributes, m))
-pretty_formula_printer(thirdRestriction(attributes, m))
+
+def fourthRestriction(attributes, m):
+    '''Para cada paciente com patologia, cada regra e cada atributo, se o atributo do paciente não se aplicar
+ao da regra, então a regra não cobre esse paciente.'''
+    patients = numberOfPatientsWithDisease(patientStatus)
+    formula_list = []
+    formulas = []
+    formula = []
+    for i in range(1, m+1):
+            for p in range(0, patients):
+                for j in attributes:
+                    aux_list = patientsDisease[j].values.tolist()
+                    if aux_list[p] == 1:
+                        formula.append([ -1*(var_pool.id('x' + str(j) + '_'+ str(i) + '_' + 'gt')),(-1*(var_pool.id('c' + str(i) + '_' + str(p+1)))) ])
+                    else:
+                        formula.append([ -1*(var_pool.id('x' + str(j) + '_'+ str(i) + '_' + 'le')),(-1*(var_pool.id('c' + str(i) + '_' + str(p+1)))) ])
+    return (formula)
+
+def fifthRestriction(attributes, m):
+    formula_list = []
+    formulas = []
+    patients = numberOfPatientsWithDisease(patientStatus)
+    for p in range(1, patients+1):
+        formula = []
+        for i in range(1,m+1):
+            formula.append(var_pool.id('c' + str(i) + '_' + str(p)))
+        formulas.append((formula))
+    return (formulas)
+
+print(fourthRestriction(attributes, m))
+pretty_formula_printer(fourthRestriction(attributes, m))

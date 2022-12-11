@@ -226,5 +226,5 @@ def distributive(A):
             return And(distributive(Or(b1, b2.left)),distributive(Or(b1, b2.right)))
     return Or(b1, b2)
 
-print(thirdRestriction(attributes, m))
-print(cnf(thirdRestriction(attributes, m)))
+print(fourthRestriction(attributes, m))
+print(cnf(fourthRestriction(attributes, m)))
