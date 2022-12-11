@@ -1,9 +1,14 @@
 from semantics import *
 from functions import *
 
+import csv
+import pandas as pd
+
+from pysat.formula import IDPool
+from pysat.formula import CNF
 
 formula7 = Implies((Implies(Not(Atom('p')), Not(Atom('q')))), Implies(Atom('p'), Atom('q'))
-                   )  # ((¬(p /\ s)) -> (q /\ r))
+                   ) 
 formula6 = Or(Not(And(Atom('p'), Atom('s'))), Atom('q'))  # ((¬(p /\ s)) v q)
 
 formula1 = Implies(And(Atom('p'), Atom('q')), Atom('r'))
@@ -65,8 +70,163 @@ def distributive(A):
 
 
 "Exemplos"
-print(formula4)
-print(cnf(formula4))
+'''print(formula4)
+print(cnf(formula4))'''
+
+var_pool = IDPool()
+
+
+def pretty_formula_printer(formula):
+  for clause in formula:
+    for literal in clause:
+      if literal > 0:
+        print(var_pool.obj(literal), ' ',  end = '')
+      else:
+        print('Not', var_pool.obj(literal*-1), ' ',  end = '')
+    print('')
 
 
 
+def associateId(A):
+    for i in getLiterals(cnf(A)):
+        var_pool.id(i)
+
+def getLiterals(formula):
+    if isinstance(formula, And) or isinstance(formula, Or):
+        sub1 = getLiterals(formula.left)
+        sub2 = getLiterals(formula.right)
+        return (sub1).union(sub2)
+    if isinstance(formula, Atom) or isinstance(formula, Not) and isinstance(formula.inner, Atom):
+        return {formula}
+    if isinstance(formula, Not):
+        return getLiterals(formula.inner)
+
+
+def function(formula):
+    lista = []
+    if isinstance(formula, And):
+        lista.append(formula.left)
+        lista.append(formula.right)
+        function(formula.left)
+        sub2 = function(formula.right)
+    return lista
+
+'''print(cnf(formula4))'''
+'''for i in getLiterals(cnf(formula4)):
+    print(i)''''''
+
+print(isinstance(cnf(formula4), Or))
+
+
+for i in function(cnf(formula4)):
+    print(i)'''
+
+t1 = var_pool.id('1_1_1')
+
+t2 = var_pool.id('1_1_1')
+
+
+'''for i in atoms(cnf(formula3)):
+    print(var_pool.id(i))
+
+
+
+print(var_pool.obj(2))'''
+
+
+
+
+
+
+#readind files and getting attributes
+
+directory = './pacientes/column_bin_3a_4p.csv'
+
+with open(directory, mode='r') as arquivo_csv:
+    leitor_csv = csv.reader(arquivo_csv)
+
+    attributes = next(leitor_csv)
+    attributes.pop()
+
+
+    #Pegando os pacientes
+pd = pd.read_csv(directory)
+patientStatus = pd['P'].values.tolist()
+
+patientsNoDisease = pd.loc[pd['P'] == 0]
+patientsDisease = pd.loc[pd['P'] == 1]
+
+'''print(patientsNoDisease['LA <= 39.63'].values.tolist())'''
+
+# atomica do tipo Xatributo,regra_atual,regra_aparece_na_formula
+m = 2
+rules = ['gt', 'le', 's']
+
+def and_all(list_formulas):
+    """
+    Returns a BIG AND formula from a list of formulas
+    For example, if list_formulas is [Atom('1'), Atom('p'), Atom('r')], it returns
+    And(And(Atom('1'), Atom('p')), Atom('r')).
+    :param list_formulas: a list of formulas
+    :return: And formula
+    """
+    first_formula = list_formulas[0]
+    del list_formulas[0]
+    for formula in list_formulas:
+        first_formula = And(first_formula, formula)
+    return first_formula
+
+
+def or_all(list_formulas):
+    """
+    Returns a BIG OR of formulas from a list of formulas.
+    For example, if list_formulas is [Atom('1'), Atom('p'), Atom('r')], it returns
+    Or(Or(Atom('1'), Atom('p')), Atom('r')).
+    :param list_formulas: a list of formulas
+    :return: Or formula
+    """
+    first_formula = list_formulas[0]
+    del list_formulas[0]
+    for formula in list_formulas:
+        first_formula = Or(first_formula, formula)
+    return first_formula
+
+
+def numberOfPatientsWithDisease(patient_list):
+    count = 0
+    for i in patient_list:
+        if i == 1:
+            count += 1
+    return count
+
+
+def secondRestrictions(attributes, m):
+    formulas = []
+    for i in range(1,m+1):
+        formula = []
+        for j in attributes:
+            for k in rules:
+                if k == 's':
+                    formula.append((-1*var_pool.id('x' + str(j) + '_' + str(i) + '_' + str(k))))
+        formulas.append(formula)
+    return (formulas)
+
+
+def thirdRestriction(attributes, m):
+    patients = len(patientStatus) - numberOfPatientsWithDisease(patientStatus)
+    formula_list = []
+    formulas = []
+    for i in range(1, m+1):
+        for p in range(patients):
+            formula = []
+            for j in attributes:
+                aux_list = patientsNoDisease[j].values.tolist()
+                if aux_list[p] == 1: 
+                    formula.append(var_pool.id('x' + str(j) + '_' + str(i) + '_' + 'gt'))
+                else:
+                    formula.append(var_pool.id('x' + str(j) + '_' + str(i) + '_' + 'le'))
+            formulas.append(((formula)))
+    return (formulas)
+
+print(thirdRestriction(attributes, m))
+pretty_formula_printer(thirdRestriction(attributes, m))
