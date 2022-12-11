@@ -6,6 +6,7 @@ import pandas as pd
 
 from pysat.formula import IDPool
 from pysat.formula import CNF
+from pysat.solvers import Cadical
 
 formula7 = Implies((Implies(Not(Atom('p')), Not(Atom('q')))), Implies(Atom('p'), Atom('q'))
                    ) 
@@ -202,20 +203,22 @@ def numberOfPatientsWithDisease(patient_list):
 def firstRestriction(attributes, m):
     '''Para cada atributo e cada regra, temos exatamente uma das três possibilidades: o atributo aparece
 com ≤ na regra, o atributo aparece com > na regra, ou o atributo não aparece na regra.'''
-    formula2 = []
     formulas = []
     a = []
+    formula2 = []
     for i in range(1,m+1):
+        formula = []
         for j in attributes:
-            formula = []
             for k in rules:
                 formula.append((var_pool.id('x' + str(j) + '_' + str(i) + '_' + str(k))))
                 for c in range(len(rules)-1):
                     if c == 1:
-                        formula2.append(([(-1*var_pool.id('x' + str(j) + '_' + str(i) + '_' + (rules[c])),-1*var_pool.id('x' + str(j) + '_' + str(i) + '_' + (rules[2])))]))
+                        formula2.append(((-1*var_pool.id('x' + str(j) + '_' + str(i) + '_' + (rules[c])))))
+                        formula2.append(-1*var_pool.id('x' + str(j) + '_' + str(i) + '_' + (rules[2])))
                     else:
                         for v in range(1, len(rules)):
-                            formula2.append([((-1*var_pool.id('x' + str(j) + '_' + str(i) + '_' + (rules[c])),-1*var_pool.id('x' + str(j) + '_' + str(i) + '_' + (rules[v]))))])
+                            formula2.append(((-1*var_pool.id('x' + str(j) + '_' + str(i) + '_' + (rules[c])))))
+                            formula2.append(-1*var_pool.id('x' + str(j) + '_' + str(i) + '_' + (rules[v])))
         formulas.append((formula))
         formulas.append(((formula2)))
     return (formulas)
@@ -279,5 +282,41 @@ def fifthRestriction(attributes, m):
         formulas.append((formula))
     return (formulas)
 
-print(firstRestriction(attributes, m))
-pretty_formula_printer(firstRestriction(attributes, m))
+
+clauses1 = firstRestriction(attributes, m)
+clauses2 = secondRestrictions(attributes, m)
+clauses3 = thirdRestriction(attributes, m)
+clauses4 = fourthRestriction(attributes, m)
+clauses5 = fifthRestriction(attributes, m)
+clauses = clauses1 + clauses2 + clauses3 + clauses4 + clauses5
+cnf2 = CNF(from_clauses=clauses)
+print(len(cnf2.clauses))
+print(cnf2.nv)
+
+
+solver = Cadical()
+solver.append_formula(cnf2.clauses)
+
+print(solver.solve())
+
+print(solver.get_model())
+
+
+def solution(attributes, m):
+    formulas = []
+    if solver.solve():
+        solution = solver.get_model()
+        for i in range(1,m+1):
+            formula = []
+            for j in attributes:
+                for k in rules:
+                    if var_pool.id('x' + str(j) + '_' + str(i) + '_' + str(k)) in solution:
+                        formula.append((('x' + str(j) + '_' + str(i) + '_' + str(k))))
+            formulas.append(formula)
+        for i in (formulas):
+            print(i)
+        print('Time to solve:', solver.time())
+    else:
+        print("Não há regras que classifiquem todos os pacientes")
+
+solution(attributes, m)
