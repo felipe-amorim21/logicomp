@@ -204,7 +204,7 @@ def firstRestriction(attributes, m):
 com ≤ na regra, o atributo aparece com > na regra, ou o atributo não aparece na regra.'''
     formula2 = []
     formulas = []
-    n = 0
+    a = []
     for i in range(1,m+1):
         for j in attributes:
             formula = []
@@ -212,10 +212,10 @@ com ≤ na regra, o atributo aparece com > na regra, ou o atributo não aparece 
                 formula.append((var_pool.id('x' + str(j) + '_' + str(i) + '_' + str(k))))
                 for c in range(len(rules)-1):
                     if c == 1:
-                        formula2.append(([(-1*(var_pool.id('x' + str(j) + '_' + str(i) + '_' + str(rules[c]))),-1*(var_pool.id('x' + str(j) + '_' + str(i) + '_' + str(rules[2]))))]))
+                        formula2.append(([(-1*var_pool.id('x' + str(j) + '_' + str(i) + '_' + (rules[c])),-1*var_pool.id('x' + str(j) + '_' + str(i) + '_' + (rules[2])))]))
                     else:
                         for v in range(1, len(rules)):
-                            formula2.append([((-1*(var_pool.id('x' + str(j) + '_' + str(i) + '_' + str(rules[c])),-1*(var_pool.id('x' + str(j) + '_' + str(i) + '_' + str(rules[v]))))))]) 
+                            formula2.append([((-1*var_pool.id('x' + str(j) + '_' + str(i) + '_' + (rules[c])),-1*var_pool.id('x' + str(j) + '_' + str(i) + '_' + (rules[v]))))])
         formulas.append((formula))
         formulas.append(((formula2)))
     return (formulas)
@@ -280,4 +280,4 @@ def fifthRestriction(attributes, m):
     return (formulas)
 
 print(firstRestriction(attributes, m))
-'pretty_formula_printer(firstRestriction(attributes, m))'
+pretty_formula_printer(firstRestriction(attributes, m))
