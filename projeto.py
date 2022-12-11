@@ -3,9 +3,13 @@ from semantics import *
 from functions import *
 import pandas as pd
 
+from itertools import combinations
+
+
+
 #readind files and getting attributes
 
-directory = './pacientes/column_bin_3a_4p.csv'
+directory = './pacientes/column_bin_3a_2p.csv'
 
 with open(directory, mode='r') as arquivo_csv:
     leitor_csv = csv.reader(arquivo_csv)
@@ -24,7 +28,7 @@ patientsDisease = pd.loc[pd['P'] == 1]
 '''print(patientsNoDisease['LA <= 39.63'].values.tolist())'''
 
 # atomica do tipo Xatributo,regra_atual,regra_aparece_na_formula
-m = 2
+m = 1
 rules = ['gt', 'le', 's']
 
 def and_all(list_formulas):
@@ -87,7 +91,6 @@ com ≤ na regra, o atributo aparece com > na regra, ou o atributo não aparece 
         formula_list.clear()
         formula2.clear()
     return and_all(formulas)
-
 
 
 def secondRestriction(attributes, m):
@@ -168,7 +171,7 @@ def fifthRestriction(attributes, m):
     return and_all(formulas)
         
 
-def isSatisfactory(first, second, third, fourth, fifth):
+def isSatisfactory(first ,second, third, fourth, fifth):
     formula = []    
     formula.extend([first, second, third, fourth, fifth])
     return satisfiability_brute_force(and_all(formula))
@@ -226,5 +229,7 @@ def distributive(A):
             return And(distributive(Or(b1, b2.left)),distributive(Or(b1, b2.right)))
     return Or(b1, b2)
 
-print(fourthRestriction(attributes, m))
-print(cnf(fourthRestriction(attributes, m)))
+'print(firstRestriction(attributes, m))'
+print(firstRestriction(attributes, m))
+print('------------------------------------------------------------')
+print(cnf(firstRestriction(attributes, m)))

@@ -140,7 +140,7 @@ print(var_pool.obj(2))'''
 
 #readind files and getting attributes
 
-directory = './pacientes/column_bin_3a_4p.csv'
+directory = './pacientes/column_bin_3a_2p.csv'
 
 with open(directory, mode='r') as arquivo_csv:
     leitor_csv = csv.reader(arquivo_csv)
@@ -198,6 +198,28 @@ def numberOfPatientsWithDisease(patient_list):
         if i == 1:
             count += 1
     return count
+
+def firstRestriction(attributes, m):
+    '''Para cada atributo e cada regra, temos exatamente uma das três possibilidades: o atributo aparece
+com ≤ na regra, o atributo aparece com > na regra, ou o atributo não aparece na regra.'''
+    formula2 = []
+    formulas = []
+    n = 0
+    for i in range(1,m+1):
+        for j in attributes:
+            formula = []
+            for k in rules:
+                formula.append((var_pool.id('x' + str(j) + '_' + str(i) + '_' + str(k))))
+                for c in range(len(rules)-1):
+                    if c == 1:
+                        formula2.append(([(-1*(var_pool.id('x' + str(j) + '_' + str(i) + '_' + str(rules[c]))),-1*(var_pool.id('x' + str(j) + '_' + str(i) + '_' + str(rules[2]))))]))
+                    else:
+                        for v in range(1, len(rules)):
+                            formula2.append([((-1*(var_pool.id('x' + str(j) + '_' + str(i) + '_' + str(rules[c])),-1*(var_pool.id('x' + str(j) + '_' + str(i) + '_' + str(rules[v]))))))]) 
+        formulas.append((formula))
+        formulas.append(((formula2)))
+    return (formulas)
+
 
 
 def secondRestrictions(attributes, m):
@@ -257,5 +279,5 @@ def fifthRestriction(attributes, m):
         formulas.append((formula))
     return (formulas)
 
-print(fourthRestriction(attributes, m))
-pretty_formula_printer(fourthRestriction(attributes, m))
+print(firstRestriction(attributes, m))
+'pretty_formula_printer(firstRestriction(attributes, m))'
