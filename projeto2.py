@@ -8,18 +8,8 @@ from pysat.formula import IDPool
 from pysat.formula import CNF
 from pysat.solvers import Cadical
 
-formula7 = Implies((Implies(Not(Atom('p')), Not(Atom('q')))), Implies(Atom('p'), Atom('q'))
-                   ) 
-formula6 = Or(Not(And(Atom('p'), Atom('s'))), Atom('q'))  # ((¬(p /\ s)) v q)
 
-formula1 = Implies(And(Atom('p'), Atom('q')), Atom('r'))
-formula2 = Implies(Not(And(Atom('p'), Atom('q'))), Atom('r'))
-formula3 = Implies(Implies(Not(Atom('p')), Not(Atom('q'))), Implies(Atom('p'), Atom('q')))
-formula4 = Or(Or(And(Atom('p'), Not(Atom('q'))),Atom('r')),And(Not(Atom('r')),Not(Atom('p'))))
-
-formula = Not(Not(Atom('q')))
-
-def cnf(A):
+'''def cnf(A):
     b = implication_free(A)
     b = negation_normal_form(b)
     b = distributive(b)
@@ -70,9 +60,7 @@ def distributive(A):
     return Or(b1, b2)
 
 
-"Exemplos"
-'''print(formula4)
-print(cnf(formula4))'''
+'''
 
 var_pool = IDPool()
 
@@ -88,60 +76,9 @@ def pretty_formula_printer(formula):
 
 
 
-def associateId(A):
-    for i in getLiterals(cnf(A)):
-        var_pool.id(i)
-
-def getLiterals(formula):
-    if isinstance(formula, And) or isinstance(formula, Or):
-        sub1 = getLiterals(formula.left)
-        sub2 = getLiterals(formula.right)
-        return (sub1).union(sub2)
-    if isinstance(formula, Atom) or isinstance(formula, Not) and isinstance(formula.inner, Atom):
-        return {formula}
-    if isinstance(formula, Not):
-        return getLiterals(formula.inner)
-
-
-def function(formula):
-    lista = []
-    if isinstance(formula, And):
-        lista.append(formula.left)
-        lista.append(formula.right)
-        function(formula.left)
-        sub2 = function(formula.right)
-    return lista
-
-'''print(cnf(formula4))'''
-'''for i in getLiterals(cnf(formula4)):
-    print(i)''''''
-
-print(isinstance(cnf(formula4), Or))
-
-
-for i in function(cnf(formula4)):
-    print(i)'''
-
-t1 = var_pool.id('1_1_1')
-
-t2 = var_pool.id('1_1_1')
-
-
-'''for i in atoms(cnf(formula3)):
-    print(var_pool.id(i))
-
-
-
-print(var_pool.obj(2))'''
-
-
-
-
-
-
 #readind files and getting attributes
 
-directory = './pacientes/column_bin_3a_2p.csv'
+directory = './pacientes/column_bin_36a_155p.csv'
 
 with open(directory, mode='r') as arquivo_csv:
     leitor_csv = csv.reader(arquivo_csv)
@@ -160,7 +97,7 @@ patientsDisease = pd.loc[pd['P'] == 1]
 '''print(patientsNoDisease['LA <= 39.63'].values.tolist())'''
 
 # atomica do tipo Xatributo,regra_atual,regra_aparece_na_formula
-m = 2
+m = 8
 rules = ['gt', 'le', 's']
 
 def and_all(list_formulas):
