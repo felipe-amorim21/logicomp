@@ -176,60 +176,6 @@ def isSatisfactory(first ,second, third, fourth, fifth):
     formula.extend([first, second, third, fourth, fifth])
     return satisfiability_brute_force(and_all(formula))
 
-'''print(isSatisfactory(firstRestriction(attributes, m), secondRestriction(attributes, m), thirdRestriction(attributes, m), fourthRestriction(attributes, m), fifthRestriction(attributes, m)))
-'''
-
-def cnf(A):
-    b = implication_free(A)
-    b = negation_normal_form(b)
-    b = distributive(b)
-    return b
+print(isSatisfactory(firstRestriction(attributes, m), secondRestriction(attributes, m), thirdRestriction(attributes, m), fourthRestriction(attributes, m), fifthRestriction(attributes, m)))
 
 
-def implication_free(A):
-    if isinstance(A, Implies):
-        b1 = implication_free(A.left)
-        b2 = implication_free(A.right)
-        return (Or(Not(b1), b2))
-    if isinstance(A, Or):
-        return (Or(implication_free(A.left), implication_free(A.right)))
-    if isinstance(A, And):
-        return (And(implication_free(A.left), implication_free(A.right)))
-    if isinstance(A, Not):
-        return Not(implication_free(A.inner))
-    if isinstance(A, Atom):
-        return A
-
-
-def negation_normal_form(A):
-    if isinstance(A, Not) and isinstance(A.inner,Not):
-        return negation_normal_form(A.inner.inner)
-    if isinstance(A, Or):
-        return (Or(negation_normal_form(A.left), negation_normal_form(A.right)))
-    if isinstance(A, And):
-        return (And(negation_normal_form(A.left), negation_normal_form(A.right)))
-    if isinstance(A, Not) and isinstance(A.inner, And):
-        return Or(negation_normal_form(Not(A.inner.left)), negation_normal_form(Not(A.inner.right)))
-    if isinstance(A, Not) and isinstance(A.inner, Or):
-        return And(negation_normal_form(Not(A.inner.left)), negation_normal_form(Not(A.inner.right)))
-    if isinstance(A, Atom) or isinstance(A, Not) and isinstance(A.inner, Atom):
-        return A
-
-def distributive(A):
-    if isinstance(A, Atom) or isinstance(A, Not) and isinstance(A.inner, Atom):
-        return A
-    if isinstance(A, And):
-        return And(distributive(A.left), distributive(A.right))
-    if isinstance(A, Or):
-        b1 = distributive(A.left)
-        b2 = distributive(A.right)
-        if isinstance(b1, And):
-            return And(distributive(Or(b1.left, b2)),distributive(Or(b1.right, b2)))
-        if isinstance(b2, And):
-            return And(distributive(Or(b1, b2.left)),distributive(Or(b1, b2.right)))
-    return Or(b1, b2)
-
-'print(firstRestriction(attributes, m))'
-print(firstRestriction(attributes, m))
-print('------------------------------------------------------------')
-print(cnf(firstRestriction(attributes, m)))
